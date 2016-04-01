@@ -32,6 +32,24 @@
     var pbjs = pbjs || {};
     pbjs.que = pbjs.que || [];
 
+    // Configure analytics providers
+    pbjs.que.push(function () {
+        pbjs.enableAnalytics([
+            {
+                provider: 'ga',
+                options: {
+                    enableDistribution: false
+                }
+            },
+            {
+                provider: 'gaOther',
+                options: {
+                    enableDistribution: false
+                }
+            }
+        ]);
+    });
+
     // Load the Prebid Javascript Library Async. We recommend loading it immediately after
     // the initAdserver() and setTimeout functions.
     (function () {
@@ -88,7 +106,7 @@
         /*  Alias Bidders (existingBidderCode, newBidderCode)    <------ New Feature
          aliased bidders will use the existing adapter and require the same params as the existing adapter. The only change is the bidderCode is updated.
          */
-        pbjs.aliasBidder('appnexus', 'brealtime')
+        pbjs.aliasBidder('appnexus', 'brealtime');
 
         /* Request bids for the added ad units. If adUnits or adUnitCodes are
          not specified, the function will request bids for all added ad units.
@@ -117,7 +135,6 @@
              timeout: 1000
              */
         });
-
     });
 
 </script>

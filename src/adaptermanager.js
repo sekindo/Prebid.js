@@ -9,6 +9,9 @@ import { BaseAdapter } from './adapters/baseAdapter';
 var _bidderRegistry = {};
 exports.bidderRegistry = _bidderRegistry;
 
+var _analyticsRegistry = {};
+exports.analyticsRegistry = _analyticsRegistry;
+
 exports.callBids = function (bidderArr) {
   for (var i = 0; i < bidderArr.length; i++) {
     //use the bidder code to identify which function to call
@@ -82,7 +85,41 @@ exports.aliasBidAdapter = function (bidderCode, alias) {
   }
 };
 
+exports.registerAnalyticsAdapter = function ({ adapter, code }) {
+  if (adapter && code) {
+
+    if (typeof adapter.enable === CONSTANTS.objectType_function) {
+      adapter.code = code;
+      _analyticsRegistry[code] = adapter;
+    } else {
+      utils.logError(`Prebid Error: Analytics adaptor error for analytics "${code}"
+        analytics adapter must implement an enableAnalytics() function`);
+    }
+  } else {
+    utils.logError('Prebid Error: analyticsAdapter or analyticsCode not specified');
+  }
+};
+
+exports.enableAnalytics = function (config) {
+  if (!utils.isArray(config)) {
+    config = [config];
+  }
+
+  utils._each(config, adapterConfig => {
+    var adapter = _analyticsRegistry[adapterConfig.provider];
+    if (adapter) {
+      adapter.enable(adapterConfig);
+    } else {
+      utils.logError(`Prebid Error: no analytics adapter found in registry for
+        ${adapterConfig.provider}.`);
+    }
+  });
+};
+
 /** INSERT ADAPTERS - DO NOT EDIT OR REMOVE */
 
-// here be adapters
 /** END INSERT ADAPTERS */
+
+/** INSERT ANALYTICS - DO NOT EDIT OR REMOVE */
+
+/** END INSERT ANALYTICS */

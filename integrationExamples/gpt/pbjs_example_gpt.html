@@ -11,7 +11,6 @@
     googletag.cmd.push(function () {
         googletag.pubads().disableInitialLoad();
     });
-
     /* pbjs.initAdserver will be called either when all bids are back, or
      when the timeout is reached.
      */
@@ -349,7 +348,6 @@
                 ]
             }
         };
-
     });
 
 </script>
@@ -408,6 +406,7 @@
     })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
     ga('create', 'XXXXXX', 'auto');
+
     //Send data from prebid.js automatically
     pbjs.que.push(function () {
         pbjs.enableAnalytics({
