@@ -5,6 +5,8 @@ var assert = require('chai').assert;
 var prebid = require('src/prebid');
 var utils = require('src/utils');
 var bidmanager = require('src/bidmanager');
+var adaptermanager = require('src/adaptermanager');
+var events = require('src/events');
 
 var bidResponses = require('test/fixtures/bid-responses.json');
 var targetingMap = require('test/fixtures/targeting-map.json');
@@ -237,6 +239,53 @@ describe('Unit: Prebid Module', function () {
       pbjs.renderAd(doc, fakeId);
       var error = 'Error trying to write ad. Cannot find ad by given id : ' + fakeId;
       assert.ok(spyLogError.calledWith(error), 'expected error was logged');
+    });
+  });
+
+  describe('requestBids', () => {
+    it('should add bidsBackHandler callback to bidmanager', () => {
+      var spyAddOneTimeCallBack = sinon.spy(bidmanager, 'addOneTimeCallback');
+      var requestObj = {
+        bidsBackHandler: function bidsBackHandlerCallback() {}
+      };
+      pbjs.requestBids(requestObj);
+      assert.ok(spyAddOneTimeCallBack.calledWith(requestObj.bidsBackHandler),
+        'called bidmanager.addOneTimeCallback');
+      bidmanager.addOneTimeCallback.restore();
+    });
+
+    it.skip('should log message when adUnits not configured', () => {
+      var spyLogMessage = sinon.spy(utils, 'logMessage');
+      pbjs.requestBids({});
+      assert.ok(spyLogMessage.calledWith('No adUniits configured. No bids requested.'), 'expected message was logged');
+      utils.logMessage.restore();
+    });
+
+    it('should execute callback after timeout', () => {
+      var spyExecuteCallback = sinon.spy(bidmanager, 'executeCallback');
+      var clock = sinon.useFakeTimers();
+      var requestObj = {
+        bidsBackHandler: function bidsBackHandlerCallback() {},
+        timeout: 2000
+      };
+
+      pbjs.requestBids(requestObj);
+
+      clock.tick(requestObj.timeout - 1);
+      assert.ok(spyExecuteCallback.notCalled, 'bidmanager.executeCallback not called');
+
+      clock.tick(1);
+      assert.ok(spyExecuteCallback.called, 'called bidmanager.executeCallback');
+
+      bidmanager.executeCallback.restore();
+      clock.restore();
+    });
+
+    it('should call callBids function on adaptermanager', () => {
+      var spyCallBids = sinon.spy(adaptermanager, 'callBids');
+      pbjs.requestBids({});
+      assert.ok(spyCallBids.called, 'called adaptermanager.callBids');
+      adaptermanager.callBids.restore();
     });
   });
 });
