@@ -482,5 +482,5 @@ export function getValue(obj, key) {
 export function getBidderCodes() {
   // this could memoize adUnits
   return pbjs.adUnits.map(unit => unit.bids.map(bid => bid.bidder)
-    .reduce(flatten, [])).reduce(flatten).filter(uniques);
+    .reduce(flatten, [])).reduce(flatten, []).filter(uniques);
 }
