@@ -288,4 +288,31 @@ describe('Unit: Prebid Module', function () {
       adaptermanager.callBids.restore();
     });
   });
+
+  describe('onEvent', () => {
+    it('should log an error when handler is not a function', () => {
+      var spyLogError = sinon.spy(utils, 'logError');
+      var event = 'testEvent';
+      pbjs.onEvent(event);
+      assert.ok(spyLogError.calledWith('The event handler provided is not a function and was not set on event "' + event + '".'),
+        'expected error was logged');
+      utils.logError.restore();
+    });
+
+    it('should log an error when id provided is not valid for event', () => {
+      var spyLogError = sinon.spy(utils, 'logError');
+      var event = 'bidWon';
+      pbjs.onEvent(event, Function, 'testId');
+      assert.ok(spyLogError.calledWith('The id provided is not valid for event "' + event + '" and no handler was set.'),
+        'expected error was logged');
+      utils.logError.restore();
+    });
+
+    it('should call events.on with valid paramaters', () => {
+      var spyEventsOn = sinon.spy(events, 'on');
+      pbjs.onEvent('bidWon', Function);
+      assert.ok(spyEventsOn.calledWith('bidWon', Function));
+      events.on.restore();
+    });
+  });
 });
