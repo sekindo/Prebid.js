@@ -308,11 +308,27 @@ describe('Unit: Prebid Module', function () {
       utils.logError.restore();
     });
 
-    it('should call events.on with valid paramaters', () => {
+    it('should call events.on with valid parameters', () => {
       var spyEventsOn = sinon.spy(events, 'on');
       pbjs.onEvent('bidWon', Function);
       assert.ok(spyEventsOn.calledWith('bidWon', Function));
       events.on.restore();
+    });
+  });
+
+  describe('offEvent', () => {
+    it('should return when id provided is not valid for event', () => {
+      var spyEventsOff = sinon.spy(events, 'off');
+      pbjs.offEvent('bidWon', Function, 'testId');
+      assert.ok(spyEventsOff.notCalled);
+      events.off.restore();
+    });
+
+    it('should call events.off with valid parameters', () => {
+      var spyEventsOff = sinon.spy(events, 'off');
+      pbjs.offEvent('bidWon', Function);
+      assert.ok(spyEventsOff.calledWith('bidWon', Function));
+      events.off.restore();
     });
   });
 });
