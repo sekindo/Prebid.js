@@ -331,4 +331,22 @@ describe('Unit: Prebid Module', function () {
       events.off.restore();
     });
   });
+
+  describe('addCallback', () => {
+    it('should log error and return null id when error registering callback', () => {
+      var spyLogError = sinon.spy(utils, 'logError');
+      var id = pbjs.addCallback('event', 'fakeFunction');
+      assert.equal(id, null, 'id returned was null');
+      assert.ok(spyLogError.calledWith('error registering callback. Check method signature'),
+        'expected error was logged');
+      utils.logError.restore();
+    });
+
+    it('should add callback to bidmanager', () => {
+      var spyAddCallback = sinon.spy(bidmanager, 'addCallback');
+      var id = pbjs.addCallback('event', Function);
+      assert.ok(spyAddCallback.calledWith(id, Function, 'event'), 'called bidmanager.addCallback');
+      bidmanager.addCallback.restore();
+    });
+  });
 });
