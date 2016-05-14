@@ -349,4 +349,11 @@ describe('Unit: Prebid Module', function () {
       bidmanager.addCallback.restore();
     });
   });
+
+  describe('removeCallback', () => {
+    it('should return null', () => {
+      const id = pbjs.removeCallback();
+      assert.equal(id, null);
+    });
+  });
 });
